@@ -1,0 +1,68 @@
+#include "NXCDefs.h"
+
+int convertirADecimal(string num) {
+    int numero = 0;
+    int longitud = StrLen(num);
+    for (int i = 0; i < longitud; i++) {
+        if (num[longitud - 1 - i] == '1') {
+            numero += (1 << i);
+        }
+    }
+    return numero;
+}
+
+task main() {
+    int maxTime = 4700;
+    string binario = "";
+    int startTime = CurrentTick();
+    int elapsedTime = 0;
+    string binario = "";
+    int contador1 = 0;
+    int contador2 = 0;
+
+    SetSensorColorFull(IN_3);
+    OnFwd(OUT_AC, 50);
+
+    until(Sensor(IN_3) == 1)
+    while (Sensor(IN_3) == 1) {
+        Wait(100);
+        contador1++;
+    }
+    OnFwd(OUT_AC, 50);
+    until(Sensor(IN_3) == 1)
+
+    while (Sensor(IN_3) == 1) {
+        Wait(100);
+        contador2++;
+    }
+
+    // Conteo continuo
+    while (true) {
+        int contador3 = 0;
+        OnFwd(OUT_AC, 50);
+        Wait(100);
+
+        while (Sensor(IN_3) == 1) {
+            contador3++;
+            OnFwd(OUT_AC, 50);
+            Wait(100);
+        }
+
+        if ((contador3 >= contador2 - 2) && (contador3 <= contador2 + 2)) {
+            ClearScreen();
+            NumOut(0, LCD_LINE4, 1);
+            StrCat(binario, "1");
+        } else if ((contador3 >= contador1 - 2) && (contador3 <= contador1 + 2)) {
+            ClearScreen();
+            NumOut(0, LCD_LINE4, 0);
+            StrCat(binario, "0");
+        }
+    }
+
+    // Convertir binario a decimal
+    int num = convertirADecimal(binario);
+    ClearScreen();
+    NumOut(0, LCD_LINE1, num);
+    Wait(1000);
+}
+
